@@ -6,6 +6,8 @@
 
         public DirectionEnum Direction { get; set; }
 
+        public char DirectionCharView => GetDirectionChar(Direction);
+
         public Position(Coordinates coordinates, DirectionEnum direction)
         {
             Coordinates = coordinates;
@@ -19,6 +21,8 @@
             East = 90,
             West = 270
         }
+
+        private const int DefaultStep = 1;
 
         public Position ChagePositionByCommand(CommandsEnum command)
         {
@@ -34,21 +38,7 @@
             
             if (command == CommandsEnum.Forward)
             {
-                switch (Direction)
-                {
-                    case DirectionEnum.North:
-                        Coordinates = new Coordinates(Coordinates.X, Coordinates.Y + 1);
-                        break;
-                    case DirectionEnum.South:
-                        Coordinates = new Coordinates(Coordinates.X, Coordinates.Y - 1);
-                        break;
-                    case DirectionEnum.West:
-                        Coordinates = new Coordinates(Coordinates.X - 1, Coordinates.Y);
-                        break;
-                    case DirectionEnum.East:
-                        Coordinates = new Coordinates(Coordinates.X + 1, Coordinates.Y);
-                        break;
-                }
+                Coordinates = GetCoordinatesMoved(Direction, Coordinates, DefaultStep);
             }
 
             return this;
@@ -66,7 +56,7 @@
             };
         }
 
-        public static char GetDirectionChar(DirectionEnum direction)
+        private static char GetDirectionChar(DirectionEnum direction)
         {
             return direction switch
             {
@@ -100,6 +90,18 @@
             }
 
             return turnedDirection;
+        }
+
+        private static Coordinates GetCoordinatesMoved(DirectionEnum currentDirrection, Coordinates currentCoordinates, int stepForMove)
+        {
+            return currentDirrection switch
+            {
+                DirectionEnum.North => new Coordinates(currentCoordinates.X, currentCoordinates.Y + stepForMove),
+                DirectionEnum.South => new Coordinates(currentCoordinates.X, currentCoordinates.Y - stepForMove),
+                DirectionEnum.West => new Coordinates(currentCoordinates.X - stepForMove, currentCoordinates.Y),
+                DirectionEnum.East => new Coordinates(currentCoordinates.X + stepForMove, currentCoordinates.Y),
+                _ => currentCoordinates,
+            };
         }
     }
 }

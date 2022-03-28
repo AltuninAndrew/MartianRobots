@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace MartianRobots.InputSystem.Contracts
+namespace MartianRobots.Contracts
 {
-    public class InputData
+    public class InputDataModel
     {
         public (int x, int y) WorldTopRightPointCoordinate { get; set; }
 

@@ -1,15 +1,16 @@
-﻿using System;
+﻿using MartianRobots.Contracts;
+using MartianRobots.Services.InputOutput.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using MartianRobots.InputSystem.Contracts;
 
-namespace MartianRobots.InputSystem
+namespace MartianRobots.Services.InputOutput
 {
-    public class InputSystem : IInputSystem
+    public class InputService : IInputService
     {
         private readonly uint _numsOfRobotsInWorld;
 
-        public InputSystem(uint numsOfRobotsInWorld)
+        public InputService(uint numsOfRobotsInWorld)
         {
             if (numsOfRobotsInWorld == 0)
             {
@@ -19,7 +20,7 @@ namespace MartianRobots.InputSystem
             _numsOfRobotsInWorld = numsOfRobotsInWorld;
         }
 
-        public InputData GetInputData()
+        public InputDataModel GetInputData()
         {
             var worldData = GetWorldDataTopRightPoint();
 
@@ -37,7 +38,7 @@ namespace MartianRobots.InputSystem
                 robotsData.Add((x, y, direction, instruction));
             }
 
-            return new InputData
+            return new InputDataModel
             {
                 WorldTopRightPointCoordinate = worldData,
                 RobotsData = robotsData

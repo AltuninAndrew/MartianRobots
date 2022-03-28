@@ -1,41 +1,50 @@
 ﻿using MartianRobots.Configs;
+using MartianRobots.Models.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace MartianRobots.Models
 {
-    public class World
+    public class World : IWorld
     {
-        public Coordinates TopRightPoint { get; }
+        private readonly Coordinates _topLeftPoint;
 
-        public Coordinates TopLeftPoint { get; }
+        private readonly Coordinates _downRightPoint;
 
-        public Coordinates DownRightPoint { get; }
+        private readonly Coordinates _downLeftPoint;
 
-        public Coordinates DownLeftPoint { get; }
+        private readonly HashSet<Coordinates> _deathPoints;
 
-        private readonly WorldConfig _worldConfig;
-
-        public World(WorldConfig worldConfig, Coordinates topRightPoint)
+        public World(uint maxWorldSize, Coordinates topRightPoint)
         {
-            _worldConfig = worldConfig ?? throw new ArgumentNullException(nameof(worldConfig));
-
-            if (topRightPoint.X > _worldConfig.MaxWorldLength || topRightPoint.Y > _worldConfig.MaxWorldLength)
+            if (topRightPoint.X > maxWorldSize || topRightPoint.Y > maxWorldSize)
             {
-                throw new ArgumentException($"Coordinates of point - {topRightPoint} cannot be more than {_worldConfig.MaxWorldLength}");
+                throw new ArgumentException($"Coordinates of point - {topRightPoint} cannot be more than {maxWorldSize}");
             }
 
-            TopRightPoint = topRightPoint;
-            TopLeftPoint = new Coordinates(0, topRightPoint.Y);
-            DownRightPoint = new Coordinates(topRightPoint.X, 0);
-            DownLeftPoint = new Coordinates(0, 0);
+            _topLeftPoint = new Coordinates(0, topRightPoint.Y);
+            _downRightPoint = new Coordinates(topRightPoint.X, 0);
+            _downLeftPoint = new Coordinates(0, 0);
+
+            _deathPoints = new HashSet<Coordinates>();
         }
 
         public bool CheckIsPointInsideInWorld(Coordinates point)
         {
-            return point.X >= DownLeftPoint.X 
-                && point.X <= DownRightPoint.X 
-                && point.Y >= DownLeftPoint.Y 
-                && point.Y <= TopLeftPoint.Y;
+            return point.X >= _downLeftPoint.X 
+                && point.X <= _downRightPoint.X 
+                && point.Y >= _downLeftPoint.Y 
+                && point.Y <= _topLeftPoint.Y;
+        }
+
+        public bool ChekIsPointContainsInDeathPoints(Coordinates point) => _deathPoints.Contains(point);
+
+        public void SaveNewDeathPoint(Coordinates point)
+        {
+            if (!_deathPoints.Contains(point))
+            {
+                _deathPoints.Add(point);
+            }
         }
     }
 }

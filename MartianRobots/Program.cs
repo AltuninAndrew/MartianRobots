@@ -1,42 +1,55 @@
-﻿using System;
+﻿using MartianRobots.Configs;
+using MartianRobots.Contracts;
+using MartianRobots.Controllers;
+using MartianRobots.Controllers.Interfaces;
+using MartianRobots.Services.InputOutput;
+using MartianRobots.Services.InputOutput.Interfaces;
+using System;
 using System.Collections.Generic;
-using MartianRobots.Configs;
-using MartianRobots.InputSystem.Contracts;
-using MartianRobots.Interact;
 
 namespace MartianRobots
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("Hello World! ");
-
             var config = new WorldConfig();
 
-            var inputSystem = new InputSystem.InputSystem(config.NumsOfRobotsInWorld);
+            var inputService = new InputService(config.NumsOfRobotsInWorld);
+            var outputService = new OutputService();
+            var robotsController = new MartianRobotsController(config);
 
-            var inputData = new InputData()
+            TestWithTemplate(robotsController, outputService);
+            TestByConsole(robotsController, inputService, outputService);
+
+            Console.ReadKey();
+        }
+
+        static void TestWithTemplate(IRobotController robotsController, IOutputService outputService)
+        {
+            var inputData = new InputDataModel
             {
+                WorldTopRightPointCoordinate = (5, 3),
                 RobotsData = new List<(int x, int y, char direct, string instuction)>()
                 {
                     (1, 1, 'E', "RFRFRFRF"),
                     (3, 2, 'N', "FRRFLLFFRRFLL"),
                     (0, 3, 'W', "LLFFFLFLFL"),
-                },
-                WorldTopRightPointCoordinate = (5, 3)
+                }
             };
-            //var inputData = inputSystem.GetInputData();
 
-            var robotController = new RobotController(config);
+            Console.WriteLine($"Test by template:\nWorld: {inputData.WorldTopRightPointCoordinate} \nRobots: {string.Join("; ", inputData.RobotsData)}");
 
-            var outputInfo = robotController.ExcecuteRobotsAction(inputData);
+            Console.WriteLine("\nResul: ");
+            outputService.PrintMessage(robotsController.ExcecuteRobotsAction(inputData));
+            Console.WriteLine("\nDone. Test by console: ");
+        }
 
-            var outputSystem = new OutputSystem.OutputSystem();
-
-            outputSystem.PrintMessage(outputInfo);
-
-            Console.ReadKey();
+        static void TestByConsole(IRobotController robotsController, IInputService inputService, IOutputService outputService)
+        {
+            var inputData = inputService.GetInputData();
+            outputService.PrintMessage(robotsController.ExcecuteRobotsAction(inputData));
+            Console.WriteLine("\nDone.");
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using MartianRobots.OutputSystem.Contracts;
+﻿using MartianRobots.Contracts;
+using MartianRobots.Services.InputOutput.Interfaces;
 using System;
 
-namespace MartianRobots.OutputSystem
+namespace MartianRobots.Services.InputOutput
 {
-    public class OutputSystem : IOutputSystem
+    public class OutputService : IOutputService
     {
-        public void PrintMessage(OutputView outputView)
+        public void PrintMessage(OutputDataModel outputView)
         {
             if (outputView != null)
             {
@@ -17,7 +18,7 @@ namespace MartianRobots.OutputSystem
                 {
                     foreach (var info in outputView.CollectionRobotsOutputInfo)
                     {
-                        var outputString = info.BaseOutputStringVeiw;
+                        var outputString = info.BaseOutputActorStringVeiw;
                         if (!string.IsNullOrEmpty(outputString))
                         {
                             Console.WriteLine(outputString);
